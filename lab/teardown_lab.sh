@@ -10,6 +10,13 @@ source "$SCRIPT_DIR/lab.env"
 
 if [ "$(id -u)" -ne 0 ]; then exec sudo -E bash "$0" "$@"; fi
 
+# Stop the Fraggle amplifier responders (detached; matched by their command line).
+pkill -f "$SCRIPT_DIR/src/udp_echo.py" 2>/dev/null || true
+
+# Remove the edge source-guard nft table if defend.sh left one behind (the router ns
+# is deleted below anyway, but do it explicitly in case teardown runs after a crash).
+ip netns exec "$NS_ROUTER" nft delete table bridge "$SG_TABLE" 2>/dev/null || true
+
 for i in $(seq 1 "$AMP_COUNT"); do
   ip netns del "amp$i" 2>/dev/null || true
 done
