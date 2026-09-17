@@ -42,7 +42,17 @@ Two attacks share that one mechanism:
   sudo apt-get update && sudo apt-get install -y tcpdump iputils-ping
   ```
 
-Run everything from inside this `lab/` directory.
+Run everything from inside this `lab/` directory. **Not sure your machine can run it?**
+Check first — this prints a PASS/FAIL verdict for every required kernel feature:
+
+```bash
+sudo bash preflight.sh
+```
+
+> **WSL2 note:** the *default* Microsoft WSL kernel often ships without `CONFIG_BRIDGE`
+> and without `bc_forwarding`, the two features the lab depends on — so the lab can fail
+> on WSL2 while working on any full Linux kernel (a VM, a container, or a cloud box).
+> `preflight.sh` tells you exactly what is missing.
 
 ## Run order
 
