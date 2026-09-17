@@ -1,5 +1,6 @@
-# compiled C sender (rebuilt on demand by run_attack.sh)
+# compiled C senders (rebuilt on demand by run_attack.sh)
 lab/src/smurf
+lab/src/fraggle
 lab/src/*.o
 
 # python bytecode

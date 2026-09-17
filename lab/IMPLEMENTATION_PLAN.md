@@ -80,12 +80,15 @@ Security_Project/
    ├─ IMPLEMENTATION_PLAN.md   (this file)
    ├─ setup_lab.sh             (create namespaces/bridges/veth + vulnerable config)
    ├─ teardown_lab.sh          (delete everything cleanly)
-   ├─ defend.sh                (apply secure-by-default settings)
-   ├─ measure.sh               (capture at victim + count + amplification factor)
-   ├─ run_attack.sh            (helper: launch sender in attacker ns)
+   ├─ defend.sh                (apply/revert defenses: router|amps|service|spoofguard|both|all)
+   ├─ measure.sh               (capture at victim + count + amplification factor; --proto icmp|udp)
+   ├─ run_attack.sh            (helper: launch a sender in attacker ns; --proto icmp|udp)
+   ├─ run_all.sh               (extension: reproduce the whole attack/defense matrix)
+   ├─ scale_test.sh            (extension: amplification factor vs. amplifier count)
    └─ src/
-      ├─ smurf.py              (Python raw-socket sender)
-      └─ smurf.c               (C raw-socket sender — report deliverable)
+      ├─ smurf.py / smurf.c    (ICMP Smurf raw-socket senders — report deliverable)
+      ├─ fraggle.py / fraggle.c(extension: UDP Fraggle raw-socket senders)
+      └─ udp_echo.py           (extension: tiny UDP echo service = the Fraggle amplifier)
 ```
 
 ## 7. Build order
@@ -106,3 +109,32 @@ Security_Project/
 - All namespaces are internal; no bridge to the real NIC → no internet/campus route.
 - Vulnerable settings live only inside namespaces and are torn down after.
 - Low, instrumented packet rate — we demonstrate the *multiplier*, not raw throughput.
+
+## 9. Extensions beyond the report
+
+The report designs the classic ICMP Smurf attack; the lab adds three extensions that
+stress-test the report's own thesis — *the misconfiguration, not the protocol, is the
+vulnerability* — with real measurements (see `results/RESULTS.md`).
+
+1. **Fraggle (UDP) variant.** `src/fraggle.{py,c}` send the identical spoofed,
+   directed-broadcast attack over UDP to the echo service (port 7); `src/udp_echo.py`
+   is a minimal echo service the lab runs on each amplifier to stand in for the
+   historically common echo/chargen daemons. The UDP checksum (over the RFC 768
+   pseudo-header) is computed by hand, like the IP and ICMP checksums. Result: Fraggle
+   amplifies by the same factor N as Smurf.
+
+2. **Layered defenses.** `defend.sh` grew from two fixes to a taxonomy —
+   `router` (bc_forwarding=0), `amps` (icmp ignore), `service` (stop UDP echo),
+   `spoofguard` (edge IP source guard via an nftables bridge rule on the attacker's
+   access port), plus `both`/`all`/`revert`. Measured cross-product: the router fix and
+   the edge source guard each stop *both* attacks; the ICMP host fix stops only Smurf
+   and the UDP host fix only Fraggle. The source guard is deliberately per-port, since
+   subnet uRPF cannot catch a spoof of an address that is valid on the same subnet.
+
+3. **Amplifier-count scaling.** `scale_test.sh` enables k of the amplifiers and shows
+   the factor tracks k exactly (`factor(k) = k`, verified 1→8 via the overridable
+   `AMP_COUNT`), the dose-response curve behind why a real /24 is so dangerous.
+
+`run_all.sh` reproduces the entire attack/defense matrix in one command and regenerates
+`results/summary.tsv`. `setup_lab.sh` also degrades gracefully when `ping` is absent
+(raw-socket self-test) so the lab self-verifies on minimal images.
