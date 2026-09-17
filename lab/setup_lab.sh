@@ -115,9 +115,10 @@ fi
 
 echo "[*] Amplification self-test (real, non-spoofed broadcast from attacker)..."
 # One request to the directed broadcast should draw AMP_COUNT replies. We read the
-# attacker's own kernel counters after the probe (a single -c1 ping would exit on the
-# FIRST reply and miss the rest). ICMP uses ping -b when present, else our own raw
-# sender with a NON-spoofed source; the Fraggle check uses the raw UDP sender.
+# attacker's own kernel counters after the probe. Both probes use OUR OWN hand-rolled
+# raw senders with a NON-spoofed source (attacker's real IP) -- no external tool ever
+# generates attack-shaped traffic in this lab; ping is used only for the plain unicast
+# reachability check above.
 attacker_intype0() {  # ICMP echo-replies received at the attacker
   ip netns exec attacker cat /proc/net/snmp | awk '
     /^IcmpMsg:/ { if (!h) { for (i=2;i<=NF;i++) c[$i]=i; h=1 }
@@ -131,12 +132,8 @@ attacker_udp_noports() {  # UDP replies to the attacker's (closed) source port
 }
 
 b=$(attacker_intype0)
-if [ "$HAVE_PING" -eq 1 ]; then
-  ip netns exec attacker ping -b -c1 -W1 "$AMP_BCAST" >/dev/null 2>&1 || true
-else
-  ip netns exec attacker python3 "$SCRIPT_DIR/src/smurf.py" \
-    --victim "$ATTACKER_IP" --broadcast "$AMP_BCAST" --count 1 --rate 1 >/dev/null 2>&1 || true
-fi
+ip netns exec attacker python3 "$SCRIPT_DIR/src/smurf.py" \
+  --victim "$ATTACKER_IP" --broadcast "$AMP_BCAST" --count 1 --rate 1 >/dev/null 2>&1 || true
 sleep 0.3
 got_icmp=$(( $(attacker_intype0) - b ))
 echo "    Smurf  (ICMP): one broadcast request drew $got_icmp echo-replies (expected $AMP_COUNT)"
