@@ -126,4 +126,5 @@ LOG="$RESULTS/summary.tsv"
 printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
   "$STAMP" "$PROTO" "$LABEL" "$ENGINE" "$COUNT" "$pcap_replies" "$replies_k1" "$factor" >>"$LOG"
 echo "[+] appended to $LOG"
-[ "$pcap_replies" != "-" ] && echo "[+] pcap: $PCAP"
+if [ "$pcap_replies" != "-" ]; then echo "[+] pcap: $PCAP"; fi
+exit 0   # never let a false final test leave a non-zero status (e.g. no tcpdump)
