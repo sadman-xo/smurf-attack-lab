@@ -54,7 +54,19 @@ start_responders() {
   disown -a 2>/dev/null || true
   sleep 0.3
 }
+sg_supported() {
+  # Does this kernel's nftables have the bridge family? (Absent on e.g. Cloud Shell.)
+  ip netns exec "$NS_ROUTER" nft add table bridge "${SG_TABLE}_probe" >/dev/null 2>&1 || return 1
+  ip netns exec "$NS_ROUTER" nft delete table bridge "${SG_TABLE}_probe" >/dev/null 2>&1 || true
+  return 0
+}
 spoofguard_on() {
+  if ! sg_supported; then
+    echo "[!] spoofguard unavailable: this kernel lacks the nftables bridge family." >&2
+    echo "    It is needed only for this one defense; every attack and the router/amps/" >&2
+    echo "    service defenses still work. Run this layer on a full Linux kernel." >&2
+    return 3
+  fi
   # nftables bridge family: drop any frame entering the attacker's access port whose
   # IP source isn't the attacker's real address. Hook 'prerouting' because the forged
   # broadcast is delivered up to the bridge's own L3 interface, not bridged port->port.
@@ -90,12 +102,19 @@ case "$MODE" in
     echo "[+] Secured (service): UDP echo responders stopped — stops Fraggle; Smurf (ICMP) still amplifies."
     ;;
   spoofguard|edge)
-    spoofguard_on
-    echo "[+] Secured (spoofguard): edge IP source guard on '$ATT_PORT' — drops the forged source, stops both."
+    if spoofguard_on; then
+      echo "[+] Secured (spoofguard): edge IP source guard on '$ATT_PORT' — drops the forged source, stops both."
+    else
+      exit 3   # unsupported kernel; caller (e.g. run_all.sh) treats this as "skip"
+    fi
     ;;
   all)
-    router_fix 0; amp_fix 1; stop_responders; spoofguard_on
-    echo "[+] Secured (ALL layers): router + amps + service + edge source guard (defence in depth)."
+    router_fix 0; amp_fix 1; stop_responders
+    if spoofguard_on; then
+      echo "[+] Secured (ALL layers): router + amps + service + edge source guard (defence in depth)."
+    else
+      echo "[+] Secured (router + amps + service). spoofguard skipped: no nftables bridge family here."
+    fi
     ;;
   revert)
     router_fix 1; amp_fix 0; spoofguard_off; start_responders
