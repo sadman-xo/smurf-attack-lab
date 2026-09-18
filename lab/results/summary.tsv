@@ -1,20 +1,4 @@
 timestamp	proto	label	engine	sent	pcap	kernel	factor
-<<<<<<< HEAD
-20260917-182304	icmp	vulnerable-icmp-py	py	100	300	300	3.00
-20260917-182308	icmp	vulnerable-icmp-c	c	100	300	300	3.00
-20260917-182312	udp	vulnerable-fraggle-py	py	100	300	300	3.00
-20260917-182315	udp	vulnerable-fraggle-c	c	100	300	300	3.00
-20260917-182319	icmp	defended-router-icmp	py	100	0	0	0.00
-20260917-182323	udp	defended-router-fraggle	py	100	0	0	0.00
-20260917-182327	icmp	defended-amps-icmp	py	100	0	0	0.00
-20260917-182330	udp	defended-amps-fraggle	py	100	300	300	3.00
-20260917-182334	icmp	defended-service-icmp	py	100	300	300	3.00
-20260917-182338	udp	defended-service-fraggle	py	100	0	0	0.00
-20260917-182342	icmp	defended-spoofguard-icmp	py	100	0	0	0.00
-20260917-182346	udp	defended-spoofguard-fraggle	py	100	0	0	0.00
-20260917-182350	icmp	vulnerable-recheck-icmp	py	100	300	300	3.00
-20260917-182353	udp	vulnerable-recheck-fraggle	py	100	300	300	3.00
-=======
 20260917-182740	icmp	vulnerable-icmp-py	py	100	300	300	3.00
 20260917-182744	icmp	vulnerable-icmp-c	c	100	300	300	3.00
 20260917-182747	udp	vulnerable-fraggle-py	py	100	300	300	3.00
@@ -29,4 +13,3 @@ timestamp	proto	label	engine	sent	pcap	kernel	factor
 20260917-182821	udp	defended-spoofguard-fraggle	py	100	0	0	0.00
 20260917-182825	icmp	vulnerable-recheck-icmp	py	100	300	300	3.00
 20260917-182829	udp	vulnerable-recheck-fraggle	py	100	300	300	3.00
->>>>>>> e989ea3937a990b3bf0a24b0fa75e9c0829f6342
