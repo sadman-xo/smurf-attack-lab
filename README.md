@@ -1,5 +1,7 @@
 # ICMP Smurf & Fraggle Attacks — Design & Isolated Lab
 
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fsadman-xo%2Fsmurf-attack-lab&cloudshell_tutorial=tutorial.md&cloudshell_workspace=.)
+
 **Group 05, Subsection A2.** A complete study of the classic ICMP *Smurf*
 amplification attack **and its UDP twin, *Fraggle***: a design report plus a hands-on
 lab that reproduces both attacks, measures their amplification, shows it scale with the
