@@ -87,7 +87,7 @@ column -t -s $'\t' results/scaling.tsv
 Verify a pcap independently:
 
 ```bash
-tcpdump -r results/vulnerable-icmp-py-*.pcap 'icmp[icmptype] = icmp-echoreply' | wc -l
+tcpdump -r results/vulnerable-icmp-py-*.pcap 'icmp[0] = 0' | wc -l
 ```
 
 Click **Next** to clean up.

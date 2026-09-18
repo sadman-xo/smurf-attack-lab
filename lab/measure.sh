@@ -62,7 +62,7 @@ if [ "$PROTO" = icmp ]; then
   kcount1() { snmp_field IcmpMsg InType0; }
   kcount2() { snmp_field Icmp InEchoReps; }
   TD_FILTER='icmp'
-  PCAP_FILTER='icmp[icmptype] = icmp-echoreply'
+  PCAP_FILTER='icmp[0] = 0'
 else
   KLABEL1="Udp NoPorts"; KLABEL2="Udp InErrors"
   kcount1() { snmp_field Udp NoPorts; }
