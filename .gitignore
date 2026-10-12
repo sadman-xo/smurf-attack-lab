@@ -1,0 +1,14 @@
+# compiled C senders (rebuilt on demand by run_attack.sh)
+lab/src/smurf
+lab/src/fraggle
+lab/src/*.o
+
+# python bytecode
+__pycache__/
+*.pyc
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*~

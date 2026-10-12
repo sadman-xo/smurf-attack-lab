@@ -1,0 +1,7 @@
+# Keep LF everywhere so the shell scripts run correctly in WSL/Linux,
+# regardless of the cloner's platform or core.autocrlf setting.
+* text=auto eol=lf
+
+# Explicit binaries (never touch line endings)
+*.pcap binary
+*.pdf  binary
